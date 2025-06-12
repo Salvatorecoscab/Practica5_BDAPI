@@ -1,0 +1,51 @@
+
+# Archivos y carpetas de Android Studio
+.gradle/
+.idea/
+.local/
+build/
+captures/
+.externalNativeBuild/
+.cxx/
+.DS_Store
+*.iml
+
+# Archivos de log
+*.log
+
+# Archivos generados por el sistema
+*.swp
+*.swo
+
+# Archivos de configuración local
+local.properties
+*.keystore
+
+# Firebase
+app/google-services.json
+**/google-services.json
+**/GoogleService-Info.plist
+firebase/
+firebase.json
+.firebaserc
+
+# Archivos de entorno
+.env
+.env.*
+
+# Crashlytics
+crashlytics-build.properties
+fabric.properties
+
+# Bundles y APKs generados
+*.apk
+*.ap_
+*.aab
+
+# IntelliJ
+out/
+
+# Archivos temporales del sistema operativo
+Thumbs.db
+ehthumbs.db
+Desktop.ini
