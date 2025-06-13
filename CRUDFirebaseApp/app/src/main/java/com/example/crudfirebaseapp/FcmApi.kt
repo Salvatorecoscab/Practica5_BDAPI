@@ -8,7 +8,7 @@ import retrofit2.http.POST
 
 // FcmApi.kt
 interface FcmApi {
-    @POST("sendHttpPushNotification") // Asegúrate que este path coincida con el nombre de tu función desplegada
+    @POST(".") // Asegúrate que este path coincida con el nombre de tu función desplegada
     suspend fun sendMessageToDevice(
         @Header("Authorization") authToken: String, // Nueva cabecera
         @Body body: SendMessageDto

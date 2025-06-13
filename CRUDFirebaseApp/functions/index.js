@@ -5,7 +5,10 @@ const {logger} = require("firebase-functions");
 
 try {
   if (!admin.apps.length) {
-    admin.initializeApp();
+    // Le decimos explícitamente al SDK dónde está la base de datos
+    admin.initializeApp({
+      databaseURL: "https://crudfirebaseapp-2908f-default-rtdb.firebaseio.com/" // <-- ¡PEGA TU URL REAL AQUÍ!
+    });
   }
 } catch (e) {
   logger.error("Firebase Admin SDK initialization error", e);

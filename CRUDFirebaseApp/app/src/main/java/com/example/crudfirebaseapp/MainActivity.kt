@@ -11,10 +11,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import com.example.crudfirebaseapp.favorites.FavoritesFragment
 import com.example.crudfirebaseapp.fragments.AdminFragment
 import com.example.crudfirebaseapp.fragments.LoginFragment
 import com.example.crudfirebaseapp.fragments.ProfileFragment
 import com.example.crudfirebaseapp.fragments.RegisterFragment
+import com.example.crudfirebaseapp.rickandmorty.ui.RickAndMortyFragment
 import com.example.crudfirebaseapp.utils.SessionManager
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.FirebaseApp
@@ -134,6 +136,24 @@ class MainActivity : AppCompatActivity() {
     private fun setupBottomNavigation() {
         bottomNavigation.setOnItemSelectedListener { item ->
             when (item.itemId) {
+                R.id.navigation_rick_and_morty -> { // AÑADIR ESTE CASO
+                    if (sessionManager.isLoggedIn()) {
+                        loadFragment(RickAndMortyFragment())
+                        true
+                    } else {
+                        Toast.makeText(this, "Debes iniciar sesión primero", Toast.LENGTH_SHORT).show()
+                        false
+                    }
+                }
+//                R.id.navigation_favorites -> {
+//                    if (sessionManager.isLoggedIn()) {
+//                        loadFragment(FavoritesFragment())
+//                        true
+//                    } else {
+//                        Toast.makeText(this, "Debes iniciar sesión primero", Toast.LENGTH_SHORT).show()
+//                        false
+//                    }
+//                }
                 R.id.navigation_login -> {
                     if (!sessionManager.isLoggedIn()) {
                         loadFragment(LoginFragment())
@@ -183,15 +203,21 @@ class MainActivity : AppCompatActivity() {
         bottomNavigation.menu.findItem(R.id.navigation_admin).isVisible = isAdmin
         bottomNavigation.menu.findItem(R.id.navigation_login).isVisible = false
         bottomNavigation.menu.findItem(R.id.navigation_register).isVisible = false
+        bottomNavigation.menu.findItem(R.id.navigation_rick_and_morty).isVisible = true // AÑADIR
         bottomNavigation.menu.findItem(R.id.navigation_profile).isVisible = true
+
+
     }
 
     private fun updateUIForLoggedOut() {
         bottomNavigation.menu.findItem(R.id.navigation_login).isVisible = true
         bottomNavigation.menu.findItem(R.id.navigation_register).isVisible = true
         bottomNavigation.menu.findItem(R.id.navigation_admin).isVisible = false
+        bottomNavigation.menu.findItem(R.id.navigation_rick_and_morty).isVisible = false // AÑADIR
         bottomNavigation.menu.findItem(R.id.navigation_profile).isVisible = false
+
     }
+
 
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()

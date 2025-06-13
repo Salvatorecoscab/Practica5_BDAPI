@@ -65,7 +65,7 @@ class SendNotificationFragment : Fragment() {
             // Ejemplo: "https://sendHttpPushNotification-abcdef123-uc.a.run.app/" si ese es el endpoint completo
             // O si el endpoint es "https://<region>-<project-id>.cloudfunctions.net/sendHttpPushNotification"
             // la baseUrl sería "https://<region>-<project-id>.cloudfunctions.net/"
-            .baseUrl("https://sendotification-857833539524.us-central1.run.app") // Reemplaza con tu URL base correcta
+            .baseUrl("https://sendpushnotificationtouser-jahdvioofq-uc.a.run.app") // Reemplaza con tu URL base correcta
             .client(okHttpClient)
             .addConverterFactory(MoshiConverterFactory.create(moshi))
             .build()

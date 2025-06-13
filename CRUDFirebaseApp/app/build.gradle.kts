@@ -4,6 +4,7 @@ plugins {
     id("com.android.application")
     alias(libs.plugins.kotlin.android)
     id("com.google.gms.google-services")
+
 }
 
 android {
@@ -83,6 +84,9 @@ dependencies {
     implementation(libs.firebase.database.ktx)
     implementation(libs.firebase.appcheck.playintegrity)
     implementation(libs.firebase.messaging)
+    implementation(libs.androidx.room.common.jvm)
+    implementation(libs.androidx.room.runtime.android)
+    implementation(libs.androidx.swiperefreshlayout)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     implementation(libs.retrofit)
@@ -91,4 +95,11 @@ dependencies {
     implementation(libs.moshi.kotlin) // Use the latest version
 
     androidTestImplementation(libs.androidx.espresso.core)
+    // Room para la base de datos local
+
+
+    //view model
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.7.0")
+    implementation("androidx.fragment:fragment-ktx:1.6.2")
 }

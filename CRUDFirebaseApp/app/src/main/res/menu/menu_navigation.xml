@@ -16,4 +16,10 @@
         android:id="@+id/navigation_profile"
         android:icon="@drawable/ic_profile"
         android:title="Profile" />
+    <item
+        android:id="@+id/navigation_rick_and_morty"
+        android:icon="@drawable/ic_rick_morty"
+        android:title="RandM" />
+
+
 </menu>
