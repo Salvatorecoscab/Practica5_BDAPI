@@ -78,6 +78,7 @@ class ProfileFragment : Fragment() {
         logoutButton.setOnClickListener {
             // Iniciar el proceso de logout que ahora incluye la eliminación del token
             attemptFcmTokenRemovalAndLogout()
+
         }
     }
 
@@ -199,10 +200,12 @@ class ProfileFragment : Fragment() {
 
             // Actualizar UI de BottomNavigationView
             val navView = requireActivity().findViewById<BottomNavigationView>(R.id.bottom_navigation)
+
             navView?.menu?.findItem(R.id.navigation_login)?.isVisible = true
             navView?.menu?.findItem(R.id.navigation_register)?.isVisible = true
             navView?.menu?.findItem(R.id.navigation_admin)?.isVisible = false
             navView?.menu?.findItem(R.id.navigation_profile)?.isVisible = false
+            navView?.menu?.findItem(R.id.navigation_rick_and_morty)?.isVisible = false
 
             // Seleccionar la pestaña de login por defecto
             navView?.selectedItemId = R.id.navigation_login

@@ -210,6 +210,7 @@ class LoginFragment : Fragment() {
         navView.menu.findItem(R.id.navigation_register).isVisible = false
         navView.menu.findItem(R.id.navigation_admin).isVisible = isAdmin
         navView.menu.findItem(R.id.navigation_profile).isVisible = true
+        navView.menu.findItem(R.id.navigation_rick_and_morty).isVisible = true
 
         // Navegar al fragmento correspondiente
         val destinationId = if (isAdmin) R.id.navigation_admin else R.id.navigation_profile

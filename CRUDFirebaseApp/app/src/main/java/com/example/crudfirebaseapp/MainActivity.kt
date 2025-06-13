@@ -11,7 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import com.example.crudfirebaseapp.favorites.FavoritesFragment
+import com.example.crudfirebaseapp.favorites.FavoritesFragment // Asegúrate de que este import se use o elimínalo
 import com.example.crudfirebaseapp.fragments.AdminFragment
 import com.example.crudfirebaseapp.fragments.LoginFragment
 import com.example.crudfirebaseapp.fragments.ProfileFragment
@@ -79,8 +79,13 @@ class MainActivity : AppCompatActivity() {
             val isAdmin = sessionManager.isAdmin()
             updateUIBasedOnRole(isAdmin)
 
+            // Si no hay estado guardado, carga el fragmento inicial según el rol
             if (savedInstanceState == null) {
-                loadFragment(if (isAdmin) AdminFragment() else ProfileFragment())
+                // Esta lógica para cargar fragmentos iniciales podría necesitar ajuste
+                // dependiendo de la experiencia que quieras al abrir la app.
+                // Por ahora, la dejamos como está.
+                loadFragment(ProfileFragment())
+                bottomNavigation.selectedItemId = R.id.navigation_profile
             }
 
             verifyAdminRole(currentUser.uid)
@@ -119,10 +124,6 @@ class MainActivity : AppCompatActivity() {
                         Log.d("MainActivity", "Actualizando rol a isAdmin=$isAdmin")
                         sessionManager.createLoginSession(userId, email, isAdmin, name)
                         updateUIBasedOnRole(isAdmin)
-
-                        if (!isAdmin && bottomNavigation.selectedItemId == R.id.navigation_admin) {
-                            bottomNavigation.selectedItemId = R.id.navigation_profile
-                        }
                     }
                 }
             }
@@ -135,57 +136,39 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupBottomNavigation() {
         bottomNavigation.setOnItemSelectedListener { item ->
+            // Si el usuario no está logueado y pulsa un ítem protegido, no hagas nada.
+            if (!sessionManager.isLoggedIn() && (item.itemId == R.id.navigation_rick_and_morty || item.itemId == R.id.navigation_profile || item.itemId == R.id.navigation_admin)) {
+                Toast.makeText(this, "Debes iniciar sesión primero", Toast.LENGTH_SHORT).show()
+                return@setOnItemSelectedListener false // Previene la selección del ítem
+            }
+
             when (item.itemId) {
-                R.id.navigation_rick_and_morty -> { // AÑADIR ESTE CASO
-                    if (sessionManager.isLoggedIn()) {
-                        loadFragment(RickAndMortyFragment())
-                        true
-                    } else {
-                        Toast.makeText(this, "Debes iniciar sesión primero", Toast.LENGTH_SHORT).show()
-                        false
-                    }
+                R.id.navigation_rick_and_morty -> {
+                    loadFragment(RickAndMortyFragment())
+                    true
                 }
-//                R.id.navigation_favorites -> {
-//                    if (sessionManager.isLoggedIn()) {
-//                        loadFragment(FavoritesFragment())
-//                        true
-//                    } else {
-//                        Toast.makeText(this, "Debes iniciar sesión primero", Toast.LENGTH_SHORT).show()
-//                        false
-//                    }
-//                }
                 R.id.navigation_login -> {
-                    if (!sessionManager.isLoggedIn()) {
-                        loadFragment(LoginFragment())
-                        true
-                    } else false
+                    loadFragment(LoginFragment())
+                    true
                 }
                 R.id.navigation_register -> {
-                    if (!sessionManager.isLoggedIn()) {
-                        loadFragment(RegisterFragment())
-                        true
-                    } else false
+                    loadFragment(RegisterFragment())
+                    true
                 }
                 R.id.navigation_admin -> {
-                    if (sessionManager.isLoggedIn() && sessionManager.isAdmin()) {
+                    if (sessionManager.isAdmin()) {
                         loadFragment(AdminFragment())
                         true
                     } else {
-                        Toast.makeText(this, "Acceso denegado. Debes ser administrador.", Toast.LENGTH_SHORT).show()
-                        bottomNavigation.selectedItemId = if (sessionManager.isLoggedIn()) R.id.navigation_profile else R.id.navigation_login
+                        // Si un usuario no-admin intenta acceder, no hagas nada.
+                        // Este caso es poco probable si el ítem está oculto, pero es una buena práctica.
+                        Toast.makeText(this, "Acceso denegado", Toast.LENGTH_SHORT).show()
                         false
                     }
                 }
                 R.id.navigation_profile -> {
-                    if (sessionManager.isLoggedIn()) {
-                        loadFragment(ProfileFragment())
-                        true
-                    } else {
-                        Toast.makeText(this, "Debes iniciar sesión primero", Toast.LENGTH_SHORT).show()
-                        loadFragment(LoginFragment())
-                        bottomNavigation.selectedItemId = R.id.navigation_login
-                        false
-                    }
+                    loadFragment(ProfileFragment())
+                    true
                 }
                 else -> false
             }
@@ -203,21 +186,18 @@ class MainActivity : AppCompatActivity() {
         bottomNavigation.menu.findItem(R.id.navigation_admin).isVisible = isAdmin
         bottomNavigation.menu.findItem(R.id.navigation_login).isVisible = false
         bottomNavigation.menu.findItem(R.id.navigation_register).isVisible = false
-        bottomNavigation.menu.findItem(R.id.navigation_rick_and_morty).isVisible = true // AÑADIR
+        bottomNavigation.menu.findItem(R.id.navigation_rick_and_morty).isVisible = true
         bottomNavigation.menu.findItem(R.id.navigation_profile).isVisible = true
-
-
     }
 
     private fun updateUIForLoggedOut() {
         bottomNavigation.menu.findItem(R.id.navigation_login).isVisible = true
         bottomNavigation.menu.findItem(R.id.navigation_register).isVisible = true
         bottomNavigation.menu.findItem(R.id.navigation_admin).isVisible = false
-        bottomNavigation.menu.findItem(R.id.navigation_rick_and_morty).isVisible = false // AÑADIR
+        // --- CORRECCIÓN APLICADA AQUÍ ---
+        bottomNavigation.menu.findItem(R.id.navigation_rick_and_morty).isVisible = false
         bottomNavigation.menu.findItem(R.id.navigation_profile).isVisible = false
-
     }
-
 
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -237,7 +217,6 @@ class MainActivity : AppCompatActivity() {
                     Log.d("Permissions", "Permiso ya concedido")
                 }
                 shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS) -> {
-                    // Muestra un mensaje educativo aquí si lo deseas
                     requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
                 }
                 else -> {
