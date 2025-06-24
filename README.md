@@ -1,4 +1,3 @@
-
 # CRUD Firebase App con Rick and Morty API
 
 Esta aplicación para Android es un sistema completo que demuestra la implementación de funcionalidades CRUD (Crear, Leer, Actualizar, Borrar) para la gestión de usuarios utilizando el stack de Firebase. Adicionalmente, se integra con la API pública de "Rick and Morty" para ofrecer una experiencia de exploración de personajes, permitiendo a los usuarios guardar sus favoritos y ver detalles específicos de cada uno.
@@ -8,12 +7,15 @@ El proyecto está desarrollado en Kotlin y sigue una arquitectura moderna MVVM (
 ## Índice
 
 1. [Desarrollo](#desarrollo)
-2. [Conclusiones](#conclusiones)
-3. [Bibliografía](#bibliografía)
+2. [Configuración de Firebase](#configuracion-de-firebase)
+3. [Conclusiones](#conclusiones)
+4. [Bibliografía](#bibliografia)
+
 ## Desarrollo
 
 A continuación se documentan las funcionalidades principales implementadas en el proyecto.
 ![Funcionalidades de la Aplicación](images/app.gif)
+
 ### Autenticación y Gestión de Usuarios (CRUD)
 
 La aplicación utiliza **Firebase Authentication** para gestionar el registro y el inicio de sesión de usuarios a través de correo electrónico y contraseña.
@@ -38,7 +40,7 @@ Los usuarios se almacenan en **Firebase Realtime Database** con información adi
 
 ### Notificaciones Push con FCM
 
-Los administradores pueden enviar notificaciones push a usuarios específicos a través de  **Firebase Cloud Messaging (FCM)** .
+Los administradores pueden enviar notificaciones push a usuarios específicos a través de **Firebase Cloud Messaging (FCM)**.
 
 * Se implementó un `SendNotificationFragment` que permite redactar un título y un mensaje.
 * La aplicación cliente gestiona la recepción de notificaciones en primer y segundo plano a través de la clase `MyFirebaseMessagingService`.
@@ -55,38 +57,112 @@ Se utiliza la librería **Retrofit** para realizar las llamadas HTTP a la API de
 
 Para esta funcionalidad se implementó una arquitectura MVVM (Fragment -> ViewModel -> Repository) para separar responsabilidades y facilitar la gestión del estado.
 
-1. **Repository (`CharacterRepository`):** Es el corazón de la lógica. Esta clase es la única fuente de verdad para los datos de los personajes. Su principal responsabilidad es:
-   * Realizar llamadas a la API de Rick and Morty para obtener la lista de personajes.
-   * Obtener la lista de IDs de los personajes favoritos del usuario actual desde  **Firebase Realtime Database** , almacenados en la ruta `/users/{userId}/favoriteCharacters/`.
-   * **Fusionar ambas fuentes de datos:** Combina la información de la API con los datos de Firebase para construir un modelo de UI (`CharacterUiModel`) que sabe si un personaje es favorito o no. Este modelo es el que se envía a la UI.
-2. **ViewModel (`RickAndMortyViewModel`):** Gestiona toda la lógica de la UI y el estado complejo, incluyendo:
-   * **Paginación (Scroll Infinito):** Carga nuevos personajes automáticamente a medida que el usuario se desplaza.
-   * **Búsqueda en la API:** Implementa una búsqueda con "debounce" (retraso) para consultar directamente la API sin sobrecargarla mientras el usuario escribe.
-   * **Filtro de Favoritos:** Mantiene un estado para mostrar solo los personajes marcados como favoritos.
-3. **Fragment (`RickAndMortyFragment` y `CharacterDetailFragment`):** Son las vistas, responsables únicamente de observar los datos del ViewModel y reaccionar a las interacciones del usuario (clics, scroll, etc.), delegando toda la lógica al ViewModel.
+1.  **Repository (`CharacterRepository`):** Es el corazón de la lógica. Esta clase es la única fuente de verdad para los datos de los personajes. Su principal responsabilidad es:
+    * Realizar llamadas a la API de Rick and Morty para obtener la lista de personajes.
+    * Obtener la lista de IDs de los personajes favoritos del usuario actual desde **Firebase Realtime Database**, almacenados en la ruta `/users/{userId}/favoriteCharacters/`.
+    * **Fusionar ambas fuentes de datos:** Combina la información de la API con los datos de Firebase para construir un modelo de UI (`CharacterUiModel`) que sabe si un personaje es favorito o no. Este modelo es el que se envía a la UI.
+2.  **ViewModel (`RickAndMortyViewModel`):** Gestiona toda la lógica de la UI y el estado complejo, incluyendo:
+    * **Paginación (Scroll Infinito):** Carga nuevos personajes automáticamente a medida que el usuario se desplaza.
+    * **Búsqueda en la API:** Implementa una búsqueda con "debounce" (retraso) para consultar directamente la API sin sobrecargarla mientras el usuario escribe.
+    * **Filtro de Favoritos:** Mantiene un estado para mostrar solo los personajes marcados como favoritos.
+3.  **Fragment (`RickAndMortyFragment` y `CharacterDetailFragment`):** Son las vistas, responsables únicamente de observar los datos del ViewModel y reaccionar a las interacciones del usuario (clics, scroll, etc.), delegando toda la lógica al ViewModel.
 
 ![Captura de Pantalla de Personajes](images/sc5.jpg)
 ![Captura de Pantalla de Detalle](images/sc6.jpg)
 
-## Conclusiones
+## Configuración de Firebase
 
-#### Logros Principales
+Esta sección detalla cómo se configuraron los servicios de Firebase para soportar la aplicación.
 
-* **Integración Completa de Firebase:** Se logró implementar con éxito un ecosistema funcional utilizando Firebase Authentication, Realtime Database, Cloud Storage y Cloud Messaging.
-* **Arquitectura Robusta:** La adopción de MVVM para las funcionalidades complejas permitió un desarrollo más ordenado y una clara separación de responsabilidades, lo que facilita futuras expansiones.
-* **Sincronización de Datos Híbrida:** Un logro clave fue la capacidad del `Repository` de actuar como intermediario entre una API externa y la base de datos de Firebase, fusionando los datos para presentar un estado coherente al usuario.
-* **Experiencia de Usuario Avanzada:** Se implementaron características complejas como la paginación, la búsqueda con "debounce" y el filtrado en tiempo real, mejorando significativamente la interacción del usuario con la aplicación.
+### 1. Base de Datos (Firebase Realtime Database)
 
-#### Retos Superados
+La información de los usuarios, incluyendo sus roles, nombres, URLs de imágenes de perfil y los tokens FCM para notificaciones, se almacena en **Firebase Realtime Database**. La estructura de datos está diseñada para facilitar la recuperación y actualización rápida de perfiles de usuario.
 
-* **Gestión de Estado Complejo:** El mayor reto fue manejar simultáneamente los estados de paginación, búsqueda y filtrado en el `RickAndMortyViewModel` sin que interfirieran entre sí.
-* **Operaciones Asíncronas:** Coordinar las llamadas asíncronas a la API de Rick and Morty y a Firebase de manera eficiente fue un desafío que se resolvió utilizando corrutinas de Kotlin (`async`/`await`).
-* **Limitaciones de Componentes de UI:** Se encontró y solucionó un error relacionado con el límite de 5 ítems del `BottomNavigationView`, lo que requirió una refactorización de la estructura de navegación para hacerla más escalable y organizada.
+* **Estructura de la colección `users`:**
+    * Cada usuario se identifica por su `uid` (proporcionado por Firebase Authentication).
+    * Dentro de cada `uid`, se almacenan campos como `createdAt`, `email`, `fcmTokens` (un mapa para almacenar múltiples tokens por dispositivo), `isAdmin` (booleano para el rol), `name`, `profileImageUrl` y `uid` nuevamente para referencia.
 
-## Bibliografía
+    ![Estructura de Realtime Database](images/sc11.png)
 
-* Android Developers. (s.f.).  *Guía para desarrolladores de Android* . Recuperado el 12 de junio de 2025, de [https://developer.android.com/guide](https://developer.android.com/guide)
-* Axel Fuhrmann. (s.f.).  *The Rick and Morty API* . Recuperado el 12 de junio de 2025, de [https://rickandmortyapi.com](https://rickandmortyapi.com)
-* Bump Technologies. (s.f.).  *Glide Documentation* . Recuperado el 12 de junio de 2025, de [https://bumptech.github.io/glide/](https://bumptech.github.io/glide/)
-* Firebase. (s.f.).  *Documentación de Firebase* . Recuperado el 12 de junio de 2025, de [https://firebase.google.com/docs](https://firebase.google.com/docs)
-* Square. (s.f.).  *Retrofit Documentation* . Recuperado el 12 de junio de 2025, de [https://square.github.io/retrofit/](https://square.github.io/retrofit/)
+
+* **Reglas de Seguridad:**
+    Las reglas de seguridad de Realtime Database se configuran para asegurar que los usuarios solo puedan leer/escribir su propia información, y que los administradores tengan permisos adecuados para gestionar otros usuarios.
+
+    ![Reglas de Seguridad de Realtime Database](images/sc8.png)
+
+* **Reglas para storage:**
+    Las reglas de seguridad de Firebase Storage permiten a los usuarios subir y descargar sus propias imágenes de perfil, asegurando que no puedan acceder a las imágenes de otros usuarios.
+
+    ![Reglas de Seguridad de Firebase Storage](images/sc9.png)
+
+### 2. Notificaciones Push (Firebase Cloud Messaging - FCM)
+
+FCM se utiliza para habilitar el envío de notificaciones push desde el panel de administración a los usuarios de la aplicación.
+
+* **Tokens FCM:** Cuando un usuario inicia sesión en la aplicación, su token de registro de FCM se recupera y se almacena en el nodo `fcmTokens` dentro de su perfil de usuario en Realtime Database. Esto permite al administrador enviar notificaciones dirigidas a dispositivos específicos.
+
+    ![Tokens FCM en Realtime Database](images/sc10.png)
+
+
+* **Cloud Function para Envío de Notificaciones:**
+    Para garantizar una comunicación segura y eficiente, el envío de notificaciones desde el administrador de la aplicación cliente (Android) se realiza a través de una **Firebase Cloud Function**. Esta función actúa como intermediario, recibiendo la solicitud del administrador y enviando la notificación a través de la API de FCM.
+
+    **Nombre de la Función:** `sendHttpPushNotification`
+
+    **Código Conceptual de la Cloud Function (JavaScript/Node.js):**
+    
+    ```javascript
+    // Importa las funciones de Firebase
+    const functions = require("firebase-functions");
+    const admin = require("firebase-admin");
+
+    // Inicializa la app de Firebase (necesario para interactuar con otros servicios como FCM)
+    admin.initializeApp();
+
+    // Define la Cloud Function que será invocada vía HTTP
+    // Configura la región si es necesario, y ajusta las opciones según tus necesidades.
+    exports.sendHttpPushNotification = functions.https.onRequest(async (req, res) => {
+      // DEBUG: Log para verificar que la función fue invocada
+      console.log("Cloud Function 'sendHttpPushNotification' invocada.");
+
+      // Verificar el método de la solicitud para asegurar que es POST
+      if (req.method !== "POST") {
+        console.warn("Método no permitido:", req.method);
+        return res.status(405).send("Método no permitido. Solo POST.");
+      }
+
+      // Extraer los datos del cuerpo de la solicitud JSON
+      // Se espera un body como: { "to": "FCM_TOKEN_DEL_USUARIO", "notification": { "title": "...", "body": "..." } }
+      const { to, notification } = req.body;
+
+      // Validar que los datos necesarios estén presentes
+      if (!to || !notification || !notification.title || !notification.body) {
+        console.error("Datos de solicitud incompletos:", req.body);
+        return res.status(400).send("Datos de solicitud incompletos. Se requiere 'to', 'notification.title' y 'notification.body'.");
+      }
+
+      // Construir el mensaje de la notificación
+      const message = {
+        token: to, // El token FCM del dispositivo de destino
+        notification: {
+          title: notification.title,
+          body: notification.body,
+        },
+        // Opcional: puedes añadir data payload para manejar lógica personalizada en la app cliente
+        // data: {
+        //   key1: "value1",
+        //   key2: "value2",
+        // },
+      };
+
+      try {
+        // Enviar la notificación usando el SDK de Firebase Admin
+        const response = await admin.messaging().send(message);
+        console.log("Notificación enviada exitosamente:", response);
+        return res.status(200).send("Notificación enviada exitosamente.");
+      } catch (error) {
+        console.error("Error al enviar notificación:", error);
+        return res.status(500).send("Error al enviar notificación.");
+      }
+    });
+    ```
